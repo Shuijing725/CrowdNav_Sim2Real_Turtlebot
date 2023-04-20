@@ -1,12 +1,11 @@
-# CrowdNav++
-This repository contains the sim2real codes for our paper titled "Intention Aware Robot Crowd Navigation with Attention-Based Interaction Graph" in ICRA 2023. 
-In sim2real, we adapted a people detector and SLAM from previous works, and transfered a crowd navigation policy to a TurtleBot2i without any real-world training.   
+# CrowdNav_Sim2Real
+This repository contains the sim2real procedure and code for our paper titled "Intention Aware Robot Crowd Navigation with Attention-Based Interaction Graph" in ICRA 2023. 
+In sim2real, we adapted a people detector and SLAM from previous works, and transfered a simulated crowd navigation policy to a TurtleBot2i without any real-world training.   
 For more details, please refer to the [project website](https://sites.google.com/view/intention-aware-crowdnav/home) and [arXiv preprint](https://arxiv.org/abs/2203.01821).
 For experiment demonstrations, please refer to the [youtube video](https://www.youtube.com/watch?v=nxpxhF019VA).
 
-<p align="center">
-<img src="/figures/open.png" width="450" />
-</p>
+<img src="/figures/3humans.gif" width="420" />  
+<img src="/figures/4humans.gif" width="420" />  
 
 ## System overview
 ### Hardware
@@ -25,7 +24,7 @@ The host computer and the turtlebot communicates through ROS by connecting to th
   - OS: Ubuntu 20.04
   - Python version: 3.8.10
   - Cuda version: 11.5
-  - ROS version: Noetic (our code WILL NOT WORK with lower versions of ROS on host computer)
+  - ROS version: Noetic (**our code WILL NOT WORK with lower versions of ROS on host computer**)
 - Turtlebot2i:
   - OS: Ubuntu 18.04
   - Python version: 3.8
@@ -124,7 +123,7 @@ catkin_make
 
 ### Testing
 1. First, test the trained policy in simulation following instructions [here](https://github.com/Shuijing725/CrowdNav_Prediction_AttnGraph#testing), make sure the results are satisfactory (success rate is at least around 90%)
-2. Create a map of the real environment using SLAM:
+2. Create a map of the real environment using SLAM:  
    a. [Turtlebot] Launch the mobile base:
       ```
       source catkin_ws/devel/setup.bash
@@ -143,7 +142,7 @@ catkin_make
       source ~/catkin_ws/devel/setup.bash
       roslaunch turtlebot_navigation laser_gmapping_demo.launch 
       ```
-   d. [Host computer] Launch rviz (see Step 2d)
+   d. [Host computer] Launch rviz
       ```
       source ~/tb2.bash
       source ~/catkin_ws/devel/setup.bash
@@ -173,7 +172,7 @@ catkin_make
      ```
      This step is ready if the terminal shows "odom received".
 
-   - [Host computer] Launch rviz (see Step 2d)
+   - [Host computer] Launch rviz (see Step 2d)  
      To calibrate localization, use "2D pose estimate" to correct the initial pose of robot, and then use "2D navigation" to navigate the robot around until the localization particles converge. 
    - [Host computer] To filter out the static obstacles on the map and improve the people detection,
         ```
@@ -189,15 +188,24 @@ catkin_make
      source ~/virtual_envs/tb2/bin/activate # activate the virtual environment created in Setup -> Host computer -> Step 6
      roslaunch dr_spaam_ros dr_spaam_ros.launch
      ```  
-   - [Host computer] Cd into the crowd navigation repo, in `trained_models/your_output_dir/arguments.py`, change `env-name` to `'rosTurtlebot2iEnv-v0'`, and run 
+   - [Turtlebot] Launch the Realsense T265 camera using `t265.launch` from this repo
      ```
-     python test.py 
+     roslaunch t265.launch
      ```
-     Type in the goal position following the terminal output.
+   - [Host computer] Cd into the crowd navigation repo, 
+     - in `trained_models/your_output_dir/arguments.py`, change `env-name` to `'rosTurtlebot2iEnv-v0'`
+     - in `trained_models/your_output_dir/configs/config.py`, change configurations under `sim2real` if needed
+     - then run 
+       ```
+       python test.py 
+       ```
+     Type in the goal position following the terminal output, and the robot will execute the policy if everything works.
 
+## To-Do list
+1. The robot localization from LiDAR and T265 are redundant. Remove the dependency on T265 later.
 
 ## Disclaimer
-1. We only tested our code in our hardware and software settings. It may work with other robots/versions of software, but we do not have any guarantee.  
+1. We only tested our code in the above listed hardware and software settings. It may work with other robots/versions of software, but we do not have any guarantee.  
 
 2. If the RL training does not converge, we recommend starting with an easier setting (fewer humans, larger circle radius, larger robot speed, etc) and then gradually increase the task difficulty during training.
 
