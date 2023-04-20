@@ -4,8 +4,8 @@ In sim2real, we adapted a people detector and SLAM from previous works, and tran
 For more details, please refer to the [project website](https://sites.google.com/view/intention-aware-crowdnav/home) and [arXiv preprint](https://arxiv.org/abs/2203.01821).
 For experiment demonstrations, please refer to the [youtube video](https://www.youtube.com/watch?v=nxpxhF019VA).
 
-<img src="/figures/3humans.gif" width="420" />  
-<img src="/figures/4humans.gif" width="420" />  
+<img src="/figures/3humans.gif" width="350" />  
+<img src="/figures/4humans.gif" width="350" />  
 
 ## System overview
 ### Hardware
