@@ -1,0 +1,2 @@
+export ROS_MASTER_URI=http://IP_address_of_the_robot
+export ROS_IP=ID_address_of_host_computer
