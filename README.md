@@ -4,8 +4,7 @@ In sim2real, we adapted a people detector and SLAM from previous works, and tran
 For more details, please refer to the [project website](https://sites.google.com/view/intention-aware-crowdnav/home) and [arXiv preprint](https://arxiv.org/abs/2203.01821).
 For experiment demonstrations, please refer to the [youtube video](https://www.youtube.com/watch?v=nxpxhF019VA).
 
-<img src="/figures/3humans.gif" width="350" />  
-<img src="/figures/4humans.gif" width="350" />  
+<img src="/figures/3humans.gif" width="350" /> <img src="/figures/4humans.gif" width="350" />  
 
 ## System overview
 ### Hardware
@@ -97,7 +96,7 @@ catkin_make
 ```
 
 3. In `catkin_ws/src/2D_lidar_person_detection/dr_spaam_ros/config/topics.yaml` line 14, change `/segway/scan_multi` to `/person_pts` to remove static obstacles from the input scans of people detector
-
+   - Otherwise, the policy network may receive false positive detections because the DR-SPAAM is not very robust w.r.t. different hardware and environments.
 4. Place `findloc_bgrm.py` into `catkin_ws/src/2D_lidar_person_detection`
 
 5. Download the virtual environment from [this link](https://drive.google.com/file/d/1a9FMezC1henRTCmBy-S6hyN_lAGHDZKw/view?usp=sharing). Create an identical virtual environment in your computer.
@@ -106,7 +105,7 @@ catkin_make
    - Skip this step and all steps related to `source tb2.bash` if you're running everything on a robot's on-board computer.
 
 ## Run the code
-### Training
+### Training in simulation
 - Clone the [crowd navigation repo](https://github.com/Shuijing725/CrowdNav_Prediction_AttnGraph)
 - Modify the configurations.
   1. Modify the configurations in `crowd_nav/configs/config.py` and `arguments.py` following instructions [here](https://github.com/Shuijing725/CrowdNav_Prediction_AttnGraph#training)
@@ -121,50 +120,51 @@ catkin_make
   ```
 - The checkpoints and configuration files will be saved to the folder specified by `output_dir` in `arguments.py`.
 
-### Testing
-1. First, test the trained policy in simulation following instructions [here](https://github.com/Shuijing725/CrowdNav_Prediction_AttnGraph#testing), make sure the results are satisfactory (success rate is at least around 90%)
-2. Create a map of the real environment using SLAM:  
-   a. [Turtlebot] Launch the mobile base:
+- Test the trained policy in simulation following instructions [here](https://github.com/Shuijing725/CrowdNav_Prediction_AttnGraph#testing), make sure the results are satisfactory (success rate is at least around 90%)
+
+### Testing in real world
+1. Create a map of the real environment using SLAM:  
+   a. <span style="color:orange">[Turtlebot]</span> Launch the mobile base:
       ```
       source catkin_ws/devel/setup.bash
       roslaunch turtlebot2i_bringup minimal.launch
       ```
       If 'no data stream, is kobuki turned on?' shows up even if the base is fully charged, we recommend unplugging the USB wire of LiDAR and restarting the Turtlebot's onboard computer.
 
-   b. [Turtlebot] Plug in the USB wire of LiDAR, launch the LiDAR:
+   b. <span style="color:orange">[Turtlebot]</span> Plug in the USB wire of LiDAR, launch the LiDAR:
       ```
       source catkin_ws/devel/setup.bash && sudo chmod 666 /dev/ttyUSB0 && sudo chmod 666 /dev/ttyUSB1 && sudo chmod 666 /dev/ttyUSB2 
       roslaunch rplidar.launch
       ```
-   c. [Host computer] Launch SLAM and navigation
+   c. <span style="color:blue">[Host computer]</span> Launch SLAM and navigation
       ```
       source ~/tb2.bash
       source ~/catkin_ws/devel/setup.bash
       roslaunch turtlebot_navigation laser_gmapping_demo.launch 
       ```
-   d. [Host computer] Launch rviz
+   d. <span style="color:blue">[Host computer]</span> Launch rviz
       ```
       source ~/tb2.bash
       source ~/catkin_ws/devel/setup.bash
       roslaunch turbot_rviz nav.launch
       ```
-   e. [Host computer] Launch robot teleoperation
+   e. <span style="color:blue">[Host computer]</span> Launch robot teleoperation
       ```
       source ~/tb2.bash 
       roslaunch turtlebot_teleop keyboard_teleop.launch
       ```
-   f. [Host computer] Teleoperate the robot around the environment until you are satisfied with the map, save the map by 
+   f. <span style="color:blue">[Host computer]</span> Teleoperate the robot around the environment until you are satisfied with the map in rviz, save the map by 
       ```
       rosrun map_server map_saver -f ~/map
       ```
       In your home directory, you will see two files: `map.yaml` and `map.pgm`.
 
-3. Then, test the trained policy in real turtlebot in the mapped environment:
-   - [Turtlebot] Launch the mobile base (see Step 2a)
+2. Then, test the trained policy in real turtlebot in the mapped environment:
+   - <span style="color:orange">[Turtlebot]</span> Launch the mobile base (see Step 2a)
 
-   - [Turtlebot] Launch the LiDAR (see Step 2b)
+   - <span style="color:orange">[Turtlebot]</span> Launch the LiDAR (see Step 2b)
 
-   - [Host computer] Launch localization and navigation
+   - <span style="color:blue">[Host computer]</span> Launch localization and navigation
      ```
      source ~/tb2.bash
      source ~/catkin_ws/devel/setup.bash
@@ -172,27 +172,27 @@ catkin_make
      ```
      This step is ready if the terminal shows "odom received".
 
-   - [Host computer] Launch rviz (see Step 2d)  
+   - <span style="color:blue">[Host computer]</span> Launch rviz (see Step 2d)  
      To calibrate localization, use "2D pose estimate" to correct the initial pose of robot, and then use "2D navigation" to navigate the robot around until the localization particles converge. 
-   - [Host computer] To filter out the static obstacles on the map and improve the people detection,
+   - <span style="color:blue">[Host computer]</span> To filter out the static obstacles on the map and improve the people detection,
         ```
      source ~/tb2.bash
      source ~/catkin_ws/devel/setup.bash
      cd ~/catkin_ws/src/2D_lidar_person_detection 
      python findloc_bgrm.py path_to_the_map_created_in_step2
      ```  
-   - [Host computer] Run the DR-SPAAM people detector:
+   - <span style="color:blue">[Host computer]</span> Run the DR-SPAAM people detector:
      ```
      source ~/tb2.bash
      source ~/catkin_ws/devel/setup.bash
      source ~/virtual_envs/tb2/bin/activate # activate the virtual environment created in Setup -> Host computer -> Step 6
      roslaunch dr_spaam_ros dr_spaam_ros.launch
      ```  
-   - [Turtlebot] Launch the Realsense T265 camera using `t265.launch` from this repo
+   - <span style="color:orange">[Turtlebot]</span> Launch the Realsense T265 camera using `t265.launch` from this repo
      ```
      roslaunch t265.launch
      ```
-   - [Host computer] Cd into the crowd navigation repo, 
+   - <span style="color:blue">[Host computer]</span> cd into the crowd navigation repo, 
      - in `trained_models/your_output_dir/arguments.py`, change `env-name` to `'rosTurtlebot2iEnv-v0'`
      - in `trained_models/your_output_dir/configs/config.py`, change configurations under `sim2real` if needed
      - then run 

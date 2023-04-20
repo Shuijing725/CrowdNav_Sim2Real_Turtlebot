@@ -184,6 +184,7 @@ if __name__ == '__main__':
             pub.publish(data_to_send)
 
             dynamic_map = Dynamic_Map()
+            # If you're using a LiDAR from a different brand, change 'scan' to the topic name that lidar scans are published to
             rospy.Subscriber('scan', LaserScan, dynamic_map.update, queue_size=1)
             dynamic_map.robot_pose_update(data=[x_, y_, yaw])
             
