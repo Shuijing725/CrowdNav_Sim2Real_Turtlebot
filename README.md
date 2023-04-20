@@ -2,7 +2,9 @@
 This repository contains the sim2real procedure and code for our paper titled "Intention Aware Robot Crowd Navigation with Attention-Based Interaction Graph" in ICRA 2023. 
 In sim2real, we adapted a people detector and SLAM from previous works, and transfered a simulated crowd navigation policy to a TurtleBot2i without any real-world training.   
 For more details, please refer to the [project website](https://sites.google.com/view/intention-aware-crowdnav/home) and [arXiv preprint](https://arxiv.org/abs/2203.01821).
-For experiment demonstrations, please refer to the [youtube video](https://www.youtube.com/watch?v=nxpxhF019VA).
+For experiment demonstrations, please refer to the [youtube video](https://www.youtube.com/watch?v=nxpxhF019VA).  
+This repo only serves as a reference point for the sim2real transfer of crowd navigation. 
+Since there are lots of uncertainties in real-world experiments that may affect performance, **we cannot guarantee that it is reproducible on your case.** 
 
 <img src="/figures/3humans.gif" width="350" /> <img src="/figures/4humans.gif" width="350" />  
 
@@ -23,7 +25,7 @@ The host computer and the turtlebot communicates through ROS by connecting to th
   - OS: Ubuntu 20.04
   - Python version: 3.8.10
   - Cuda version: 11.5
-  - ROS version: Noetic (**our code WILL NOT WORK with lower versions of ROS on host computer**)
+  - ROS version: Noetic **(our code WILL NOT WORK with lower versions of ROS on host computer)**
 - Turtlebot2i:
   - OS: Ubuntu 18.04
   - Python version: 3.8
@@ -124,47 +126,47 @@ catkin_make
 
 ### Testing in real world
 1. Create a map of the real environment using SLAM:  
-   a. <span style="color:orange">[Turtlebot]</span> Launch the mobile base:
+   a. **[Turtlebot]** Launch the mobile base:
       ```
       source catkin_ws/devel/setup.bash
       roslaunch turtlebot2i_bringup minimal.launch
       ```
       If 'no data stream, is kobuki turned on?' shows up even if the base is fully charged, we recommend unplugging the USB wire of LiDAR and restarting the Turtlebot's onboard computer.
 
-   b. <span style="color:orange">[Turtlebot]</span> Plug in the USB wire of LiDAR, launch the LiDAR:
+   b. **[Turtlebot]** Plug in the USB wire of LiDAR, launch the LiDAR:
       ```
       source catkin_ws/devel/setup.bash && sudo chmod 666 /dev/ttyUSB0 && sudo chmod 666 /dev/ttyUSB1 && sudo chmod 666 /dev/ttyUSB2 
       roslaunch rplidar.launch
       ```
-   c. <span style="color:blue">[Host computer]</span> Launch SLAM and navigation
+   c. **[Host computer]** Launch SLAM and navigation
       ```
       source ~/tb2.bash
       source ~/catkin_ws/devel/setup.bash
       roslaunch turtlebot_navigation laser_gmapping_demo.launch 
       ```
-   d. <span style="color:blue">[Host computer]</span> Launch rviz
+   d. **[Host computer]** Launch rviz
       ```
       source ~/tb2.bash
       source ~/catkin_ws/devel/setup.bash
       roslaunch turbot_rviz nav.launch
       ```
-   e. <span style="color:blue">[Host computer]</span> Launch robot teleoperation
+   e. **[Host computer]** Launch robot teleoperation
       ```
       source ~/tb2.bash 
       roslaunch turtlebot_teleop keyboard_teleop.launch
       ```
-   f. <span style="color:blue">[Host computer]</span> Teleoperate the robot around the environment until you are satisfied with the map in rviz, save the map by 
+   f. **[Host computer]** Teleoperate the robot around the environment until you are satisfied with the map in rviz, save the map by 
       ```
       rosrun map_server map_saver -f ~/map
       ```
       In your home directory, you will see two files: `map.yaml` and `map.pgm`.
 
 2. Then, test the trained policy in real turtlebot in the mapped environment:
-   - <span style="color:orange">[Turtlebot]</span> Launch the mobile base (see Step 2a)
+   - **[Turtlebot]** Launch the mobile base (see Step 2a)
 
-   - <span style="color:orange">[Turtlebot]</span> Launch the LiDAR (see Step 2b)
+   - **[Turtlebot]** Launch the LiDAR (see Step 2b)
 
-   - <span style="color:blue">[Host computer]</span> Launch localization and navigation
+   - **[Host computer]** Launch localization and navigation
      ```
      source ~/tb2.bash
      source ~/catkin_ws/devel/setup.bash
@@ -172,27 +174,27 @@ catkin_make
      ```
      This step is ready if the terminal shows "odom received".
 
-   - <span style="color:blue">[Host computer]</span> Launch rviz (see Step 2d)  
+   - **[Host computer]** Launch rviz (see Step 2d)  
      To calibrate localization, use "2D pose estimate" to correct the initial pose of robot, and then use "2D navigation" to navigate the robot around until the localization particles converge. 
-   - <span style="color:blue">[Host computer]</span> To filter out the static obstacles on the map and improve the people detection,
+   - **[Host computer]** To filter out the static obstacles on the map and improve the people detection,
         ```
      source ~/tb2.bash
      source ~/catkin_ws/devel/setup.bash
      cd ~/catkin_ws/src/2D_lidar_person_detection 
      python findloc_bgrm.py path_to_the_map_created_in_step2
      ```  
-   - <span style="color:blue">[Host computer]</span> Run the DR-SPAAM people detector:
+   - **[Host computer]** Run the DR-SPAAM people detector:
      ```
      source ~/tb2.bash
      source ~/catkin_ws/devel/setup.bash
      source ~/virtual_envs/tb2/bin/activate # activate the virtual environment created in Setup -> Host computer -> Step 6
      roslaunch dr_spaam_ros dr_spaam_ros.launch
      ```  
-   - <span style="color:orange">[Turtlebot]</span> Launch the Realsense T265 camera using `t265.launch` from this repo
+   - **[Turtlebot]** Launch the Realsense T265 camera using `t265.launch` from this repo
      ```
      roslaunch t265.launch
      ```
-   - <span style="color:blue">[Host computer]</span> cd into the crowd navigation repo, 
+   - **[Host computer]** cd into the crowd navigation repo, 
      - in `trained_models/your_output_dir/arguments.py`, change `env-name` to `'rosTurtlebot2iEnv-v0'`
      - in `trained_models/your_output_dir/configs/config.py`, change configurations under `sim2real` if needed
      - then run 
