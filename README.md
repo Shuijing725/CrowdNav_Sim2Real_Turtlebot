@@ -27,9 +27,9 @@ The host computer and the turtlebot communicates through ROS by connecting to th
   - Cuda version: 11.5
   - ROS version: Noetic **(our code WILL NOT WORK with lower versions of ROS on host computer)**
 - Turtlebot2i:
-  - OS: Ubuntu 18.04
+  - OS: Linux
   - Python version: 3.8
-  - Cuda version: cuda is not needed
+  - Cuda version: cuda is not needed unless you're running everything on board (i.e. no host computer)
   - ROS version: Melodic
 
 
@@ -64,6 +64,9 @@ cd ~/catkin_ws
 catkin_make
 ```
 
+3. Install realsense-ros following [this link](https://jsk-docs.readthedocs.io/projects/jsk_recognition/en/latest/install_realsense_camera.html)
+   - Skip this step if you're planning to use LiDAR for robot localization.
+
 ### Host computer
 1. Create a catkin workspace
 ```
@@ -88,7 +91,10 @@ git clone https://github.com/yujinrobot/kobuki_msgs.git
 
 # to use lidar for SLAM
 git clone https://github.com/surfertas/turtlebot2_lidar.git
-git clone https://github.com/SteveMacenski/slam_toolbox/tree/noetic-devel.git
+git clone https://github.com/SteveMacenski/slam_toolbox.git
+cd slam_toolbox
+git checkout noetic-devel
+cd ..
 
 # people detector
 git clone https://github.com/VisualComputingInstitute/2D_lidar_person_detection.git
@@ -99,7 +105,7 @@ catkin_make
 
 3. In `catkin_ws/src/2D_lidar_person_detection/dr_spaam_ros/config/topics.yaml` line 14, change `/segway/scan_multi` to `/person_pts` to remove static obstacles from the input scans of people detector
    - Otherwise, the policy network may receive false positive detections because the DR-SPAAM is not very robust w.r.t. different hardware and environments.
-4. Place `findloc_bgrm.py` into `catkin_ws/src/2D_lidar_person_detection`
+4. Place [`findloc_bgrm.py`](https://github.com/Shuijing725/CrowdNav_Sim2Real_Turtlebot/blob/master/findloc_bgrm.py) into `catkin_ws/src/2D_lidar_person_detection`
 
 5. Download the virtual environment from [this link](https://drive.google.com/file/d/1a9FMezC1henRTCmBy-S6hyN_lAGHDZKw/view?usp=sharing). Create an identical virtual environment in your computer.
 
@@ -113,7 +119,8 @@ catkin_make
   1. Modify the configurations in `crowd_nav/configs/config.py` and `arguments.py` following instructions [here](https://github.com/Shuijing725/CrowdNav_Prediction_AttnGraph#training)
 
   2. In `crowd_nav/configs/config.py`, set 
-     - `action_space.kinematics = "unicycle"`
+     - `action_space.kinematics = "unicycle"` if your robot has a differential drive
+       - Explanations on [holonomic robot](https://techtv.mit.edu/videos/9392041131714766aa78ffadf4e8c76c/#:~:text=Holonomic%20drive%2C%20in%20the%20realm,direction%2C%20would%20not%20be%20holonomic.) v.s. [differential drive robot](https://msl.cs.uiuc.edu/planning/node659.html)
      - adjust `sim.circle_radius`, `sim.arena_size`, and `sim.human_num` based on your real environment
      
 - After you change the configurations, run
@@ -194,6 +201,7 @@ catkin_make
      ```
      roslaunch t265.launch
      ```
+     - Skip this step if you're planning to use LiDAR for robot localization.
    - **[Host computer]** cd into the crowd navigation repo, 
      - in `trained_models/your_output_dir/arguments.py`, change `env-name` to `'rosTurtlebot2iEnv-v0'`
      - in `trained_models/your_output_dir/configs/config.py`, change configurations under `sim2real` if needed
@@ -239,13 +247,8 @@ If you find the code or the paper useful for your research, please cite the foll
 Other contributors:  
 [Peixin Chang](https://github.com/PeixinC)  
 [Kaiwen Hong](https://www.linkedin.com/in/kaiwen-hong-524520141/?locale=en_US)   
+[Jerry Wang](https://www.linkedin.com/in/runxuan-wang/)
 [Eric Liang](https://www.linkedin.com/in/weihang-liang-5147a014a/)  
-
-Part of the code is based on the following repositories:  
-
-[1] S. Liu, P. Chang, W. Liang, N. Chakraborty, and K. Driggs-Campbell, "Decentralized Structural-RNN for Robot Crowd Navigation with Deep Reinforcement Learning," in IEEE International Conference on Robotics and Automation (ICRA), 2019, pp. 3517-3524. (Github: https://github.com/Shuijing725/CrowdNav_DSRNN)  
-
-[2] Z. Huang, R. Li, K. Shin, and K. Driggs-Campbell. "Learning Sparse Interaction Graphs of Partially Detected Pedestrians for Trajectory Prediction," in IEEE Robotics and Automation Letters, vol. 7, no. 2, pp. 1198–1205, 2022. (Github: https://github.com/tedhuang96/gst)  
 
 ## Contact
 If you have any questions or find any bugs, please feel free to open an issue or pull request.
