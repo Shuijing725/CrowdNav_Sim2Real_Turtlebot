@@ -94,6 +94,7 @@ git clone https://github.com/surfertas/turtlebot2_lidar.git
 git clone https://github.com/SteveMacenski/slam_toolbox.git
 cd slam_toolbox
 git checkout noetic-devel
+rosdep install -q -y -r --from-paths src --ignore-src
 cd ..
 
 # people detector
