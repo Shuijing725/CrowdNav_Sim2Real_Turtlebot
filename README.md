@@ -106,11 +106,13 @@ catkin_make
 
 3. In `catkin_ws/src/2D_lidar_person_detection/dr_spaam_ros/config/topics.yaml` line 14, change `/segway/scan_multi` to `/person_pts` to remove static obstacles from the input scans of people detector
    - Otherwise, the policy network may receive false positive detections because the DR-SPAAM is not very robust w.r.t. different hardware and environments.
-4. Place [`findloc_bgrm.py`](https://github.com/Shuijing725/CrowdNav_Sim2Real_Turtlebot/blob/master/findloc_bgrm.py) into `catkin_ws/src/2D_lidar_person_detection`
+4. Download the pretrained people detector checkpoint from [DR_SPAAM github](https://github.com/VisualComputingInstitute/2D_lidar_person_detection), and modify the path to the pre-trained checkpoint at `dr_spaam_ros/config/`
+   - In our case, DR_SPAAM is better than DROW3, but neither of them is good enough so we need to remove background LiDAR points anyway.
+5. Place [`findloc_bgrm.py`](https://github.com/Shuijing725/CrowdNav_Sim2Real_Turtlebot/blob/master/findloc_bgrm.py) into `catkin_ws/src/2D_lidar_person_detection`
 
-5. Download the virtual environment from [this link](https://drive.google.com/file/d/1a9FMezC1henRTCmBy-S6hyN_lAGHDZKw/view?usp=sharing). Create an identical virtual environment in your computer.
+6. Download the virtual environment from [this link](https://drive.google.com/file/d/1a9FMezC1henRTCmBy-S6hyN_lAGHDZKw/view?usp=sharing). Create an identical virtual environment in your computer.
 
-6. Connect the robot and host computer to the same WiFi network. In `tb2.bash`, change `ROS_MASTER` to the IP address of the robot, change `ROS_IP` to the IP address of the host computer.
+7. Connect the robot and host computer to the same WiFi network. In `tb2.bash`, change `ROS_MASTER` to the IP address of the robot, change `ROS_IP` to the IP address of the host computer.
    - Skip this step and all steps related to `source tb2.bash` if you're running everything on a robot's on-board computer.
 
 ## Run the code
@@ -170,11 +172,11 @@ catkin_make
       In your home directory, you will see two files: `map.yaml` and `map.pgm`.
 
 2. Then, test the trained policy in real turtlebot in the mapped environment:
-   - **[Turtlebot]** Launch the mobile base (see Step 2a)
+   a. **[Turtlebot]** Launch the mobile base (see Step 2a)
 
-   - **[Turtlebot]** Launch the LiDAR (see Step 2b)
+   b. **[Turtlebot]** Launch the LiDAR (see Step 2b)
 
-   - **[Host computer]** Launch localization and navigation
+   c. **[Host computer]** Launch localization and navigation
      ```
      source ~/tb2.bash
      source ~/catkin_ws/devel/setup.bash
@@ -182,28 +184,28 @@ catkin_make
      ```
      This step is ready if the terminal shows "odom received".
 
-   - **[Host computer]** Launch rviz (see Step 2d)  
+   d. **[Host computer]** Launch rviz (see Step 2d)  
      To calibrate localization, use "2D pose estimate" to correct the initial pose of robot, and then use "2D navigation" to navigate the robot around until the localization particles converge. 
-   - **[Host computer]** To filter out the static obstacles on the map and improve the people detection,
-        ```
+   e. **[Host computer]** To filter out the static obstacles on the map and improve the people detection,
+    ```
      source ~/tb2.bash
      source ~/catkin_ws/devel/setup.bash
      cd ~/catkin_ws/src/2D_lidar_person_detection 
      python findloc_bgrm.py path_to_the_map_created_in_step2
      ```  
-   - **[Host computer]** Run the DR-SPAAM people detector:
+   f. **[Host computer]** Run the DR-SPAAM people detector:
      ```
      source ~/tb2.bash
      source ~/catkin_ws/devel/setup.bash
      source ~/virtual_envs/tb2/bin/activate # activate the virtual environment created in Setup -> Host computer -> Step 6
      roslaunch dr_spaam_ros dr_spaam_ros.launch
      ```  
-   - **[Turtlebot]** Launch the Realsense T265 camera using `t265.launch` from this repo
+   g. **[Turtlebot]** Launch the Realsense T265 camera using `t265.launch` from this repo
      ```
      roslaunch t265.launch
      ```
      - Skip this step if you're planning to use LiDAR for robot localization.
-   - **[Host computer]** cd into the crowd navigation repo, 
+   h. **[Host computer]** cd into the crowd navigation repo, 
      - in `trained_models/your_output_dir/arguments.py`, change `env-name` to `'rosTurtlebot2iEnv-v0'`
      - in `trained_models/your_output_dir/configs/config.py`, change configurations under `sim2real` if needed
      - then run 
@@ -248,7 +250,7 @@ If you find the code or the paper useful for your research, please cite the foll
 Other contributors:  
 [Peixin Chang](https://github.com/PeixinC)  
 [Kaiwen Hong](https://www.linkedin.com/in/kaiwen-hong-524520141/?locale=en_US)   
-[Jerry Wang](https://www.linkedin.com/in/runxuan-wang/)
+[Jerry Wang](https://www.linkedin.com/in/runxuan-wang/)  
 [Eric Liang](https://www.linkedin.com/in/weihang-liang-5147a014a/)  
 
 ## Contact
