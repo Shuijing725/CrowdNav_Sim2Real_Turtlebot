@@ -185,7 +185,10 @@ catkin_make
      This step is ready if the terminal shows "odom received".
 
    d. **[Host computer]** Launch rviz (see Step 2d)  
-     To calibrate localization, use "2D pose estimate" to correct the initial pose of robot, and then use "2D navigation" to navigate the robot around until the localization particles converge. 
+     To calibrate localization, use "2D pose estimate" to correct the initial pose of robot, and then use "2D navigation" to navigate the robot around until the localization particles converge.
+     The video below demonstrates the calibration process:  
+        [![Shuijing Liu on YouTube](http://img.youtube.com/vi/MdZ6RLviqx4/0.jpg)](http://www.youtube.com/watch?v=MdZ6RLviqx4 "Calibrate robot localization in AMCL in ROS navigaion stack")
+      
    e. **[Host computer]** To filter out the static obstacles on the map and improve the people detection,
     ```
      source ~/tb2.bash
