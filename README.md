@@ -1,12 +1,12 @@
 # CrowdNav_Sim2Real
-This repository contains the sim2real procedure and code for our paper titled "Intention Aware Robot Crowd Navigation with Attention-Based Interaction Graph" in ICRA 2023. 
-In sim2real, we adapted a people detector and SLAM from previous works, and transfered a simulated crowd navigation policy to a TurtleBot2i without any real-world training.   
-For more details, please refer to the [project website](https://sites.google.com/view/intention-aware-crowdnav/home) and [arXiv preprint](https://arxiv.org/abs/2203.01821).
-For experiment demonstrations, please refer to the [youtube video](https://www.youtube.com/watch?v=nxpxhF019VA).  
+This repository contains the official sim2real procedure and code for our following papers: 
+- [Intention Aware Robot Crowd Navigation with Attention-Based Interaction Graph](https://sites.google.com/view/intention-aware-crowdnav/home), ICRA 2023. 
+- [HEIGHT: Heterogeneous Interaction Graph Transformer for Robot Navigation in Crowded and Constrained Environments](https://sites.google.com/view/crowdnav-height/home), under review T-RO. 
+In sim2real experiments, we used an off-the-shelf a people detector and SLAM, and transfered a simulated crowd navigation policy to a TurtleBot2i without any real-world training.    
 This repo only serves as a reference point for the sim2real transfer of crowd navigation. 
-Since there are lots of uncertainties in real-world experiments that may affect performance, **we cannot guarantee that it is reproducible on your case.** 
+Since there are lots of uncertainties in real-world experiments that may affect performance, **we cannot guarantee that it is reproducible in your case.** 
 
-<img src="/figures/3humans.gif" width="350" /> <img src="/figures/4humans.gif" width="350" />  
+<img src="/figures/real.gif" width="250" /> <img src="/figures/3humans.gif" width="250" /> <img src="/figures/4humans.gif" width="250" />  
 
 ## System overview
 ### Hardware
